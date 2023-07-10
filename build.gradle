@@ -1,19 +1,58 @@
-plugins {
-    id 'java'
-}
-
-group = 'org.example'
-version = '1.0-SNAPSHOT'
+group = 'org.ftt'
+version = '0.0.1-SNAPSHOT'
 
 repositories {
     mavenCentral()
 }
 
-dependencies {
-    testImplementation platform('org.junit:junit-bom:5.9.1')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+defaultTasks "default"
+
+tasks.register("default") {
+    doLast {
+        println "${project.tasks.toList()}"
+    }
 }
 
-test {
-    useJUnitPlatform()
+tasks.register("version") {
+    doFirst {
+        println "Gradle version ${gradle.gradleVersion}"
+    }
+}
+
+tasks.register("hello") {
+    group = "Demo"
+    description = "Basic task"
+
+    dependsOn tasks.version
+    finalizedBy tasks.Bye
+    doLast {
+        println 'Hello world!'
+    }
+}
+
+tasks.named("hello") {
+    doFirst {
+        println 'Edited Hello'
+    }
+}
+
+4.times {
+    def taskId = it
+    tasks.register("task$taskId") {
+        doLast {
+            println "Task$taskId called"
+        }
+    }
+}
+
+tasks.named("task3") {
+    dependsOn tasks.task0
+    dependsOn tasks.task1
+    dependsOn tasks.task2
+}
+
+tasks.register("Bye") {
+    doLast {
+        println "Bye!"
+    }
 }
