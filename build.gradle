@@ -7,6 +7,21 @@ repositories {
 
 defaultTasks "default"
 
+def number = 2
+
+tasks.register("addOne") {
+    doLast {
+        number+=2
+    }
+}
+
+tasks.register("printNumber") {
+    shouldRunAfter(tasks.addOne)
+    doLast {
+        println "$number"
+    }
+}
+
 tasks.register("default") {
     doLast {
         println "${project.tasks.toList()}"
