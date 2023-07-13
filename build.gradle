@@ -1,19 +1,67 @@
-plugins {
-    id 'java'
+group = 'org.ftt'
+version = '0.0.1-SNAPSHOT'
+
+class InitPlugin implements Plugin<Gradle> {
+
+    @Override
+    void apply(Gradle target) {
+        //Initialization Scripts
+    }
 }
 
-group = 'org.example'
-version = '1.0-SNAPSHOT'
+class SettingsPlugin implements Plugin<Settings> {
 
-repositories {
-    mavenCentral()
+    @Override
+    void apply(Settings target) {
+        //Settings Scripts (e.g multi-project)
+    }
 }
 
-dependencies {
-    testImplementation platform('org.junit:junit-bom:5.9.1')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+//--------------------------------------------------------------------//
+
+interface WordCountExtension {
+    @InputFile
+    RegularFileProperty getFileLoc()
+
+    @Input
+    Property<String> getWord()
 }
 
-test {
-    useJUnitPlatform()
+abstract class CountWordsTask extends DefaultTask {
+
+    @InputFile
+    abstract protected RegularFileProperty getFileLoc();
+    @Input
+    abstract protected Property<String> getWord();
+
+    @TaskAction
+    void countWords() {
+        def result = fileLoc.get().asFile.readLines().findAll {
+            it.contains word.get()
+        }
+        println "${word.get()} = ${result.size()}"
+        println "$result"
+    }
+
+}
+
+class WordCountPlugin implements Plugin<Project> {
+
+    @Override
+    void apply(Project target) {
+        target.extensions.create("wordCount", WordCountExtension)
+        target.tasks.register("countWord", CountWordsTask) {
+            group = "word"
+
+            fileLoc = target.wordCount.fileLoc
+            word = target.wordCount.word
+        }
+    }
+}
+
+apply plugin: WordCountPlugin
+
+wordCount {
+    fileLoc = file("lyrics.txt")
+    word = "Hello"
 }
