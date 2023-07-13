@@ -1,6 +1,26 @@
 group = 'org.ftt'
 version = '0.0.1-SNAPSHOT'
 
+class UrlVerify extends DefaultTask {
+    private String url;
+
+    @Option(option = "url", description = "Configures the URL to be verified.")
+    void setUrl(String url) {
+        this.url = url;
+    }
+
+    @Input
+    String getUrl() {
+        return url;
+    }
+
+    @TaskAction
+    void verify() {
+        def isValid = url.startsWith "http"
+        println "$isValid"
+    }
+}
+
 abstract class PlusTask extends DefaultTask {
 
     @Input
@@ -17,9 +37,13 @@ abstract class PlusTask extends DefaultTask {
     @TaskAction
     def doTask() {
         println "${numberOne.get()} + ${numberTwo.get()} = ${numberOne.get() + numberTwo.get()}"
-
     }
 }
+
+//apply {
+//
+//}
+
 
 tasks.register("plusTaskDefault", PlusTask)
 
@@ -27,3 +51,5 @@ tasks.register("plusTask", PlusTask) {
     numberOne = 2
     numberTwo = 3
 }
+
+tasks.register("urlVerify", UrlVerify)
