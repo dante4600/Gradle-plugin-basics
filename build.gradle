@@ -1,19 +1,29 @@
-plugins {
-    id 'java'
+group = 'org.ftt'
+version = '0.0.1-SNAPSHOT'
+
+abstract class PlusTask extends DefaultTask {
+
+    @Input
+    abstract protected Property<Integer> getNumberOne();
+    @Input
+    abstract protected Property<Integer> getNumberTwo();
+
+    PlusTask() {
+        numberOne.convention(6)
+        numberTwo.convention(4)
+        numberOne.set(numberTwo.get() + numberOne.get())
+    }
+
+    @TaskAction
+    def doTask() {
+        println "${numberOne.get()} + ${numberTwo.get()} = ${numberOne.get() + numberTwo.get()}"
+
+    }
 }
 
-group = 'org.example'
-version = '1.0-SNAPSHOT'
+tasks.register("plusTaskDefault", PlusTask)
 
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    testImplementation platform('org.junit:junit-bom:5.9.1')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-}
-
-test {
-    useJUnitPlatform()
+tasks.register("plusTask", PlusTask) {
+    numberOne = 2
+    numberTwo = 3
 }
