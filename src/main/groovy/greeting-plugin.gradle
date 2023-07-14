@@ -1,0 +1,30 @@
+
+tasks.register("Greeting") {
+    doLast {
+        println "Hello"
+    }
+}
+
+tasks.named("Greeting") {
+    doFirst {
+        print "Salut"
+    }
+}
+
+class GreetingPlugin implements Plugin<Project> {
+
+    @Override
+    void apply(Project target) {
+        target.tasks.register("Greeting") {
+            doLast {
+                println "Hello"
+            }
+        }
+
+        target.tasks.named("Greeting") {
+            doFirst {
+                print "Salut"
+            }
+        }
+    }
+}
